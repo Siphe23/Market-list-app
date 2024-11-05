@@ -1,7 +1,7 @@
-// src/Frontend/components/Navbar.js
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaUser, FaShoppingCart } from 'react-icons/fa'; // Import user and cart icons
+import { FaUser, FaShoppingCart } from 'react-icons/fa';
 import '../assets/Navbar.css';
 
 const Navbar = () => {
