@@ -34,20 +34,23 @@ const ShoppingList = () => {
   };
 
   const handleAddToCart = (product) => {
-    dispatch(addItem(product)); // Update this line to dispatch addItem
+    dispatch(addItem(product)); // Dispatch addItem
   };
 
   return (
     <div>
       <h1>Shopping List</h1>
       <div>
+        <label htmlFor="search">Search:</label>
         <input
+          id="search"
           type="text"
           placeholder="Search products..."
           value={searchTerm}
           onChange={handleSearch}
         />
-        <select onChange={handleCategoryChange}>
+        <label htmlFor="category">Category:</label>
+        <select id="category" onChange={handleCategoryChange}>
           <option value="All">All</option>
           <option value="Clothes">Clothes</option>
           <option value="Electronics">Electronics</option>
@@ -55,18 +58,22 @@ const ShoppingList = () => {
         </select>
       </div>
       <div className="product-list">
-        {filteredProducts.map((product) => (
-          <div className="product-card" key={product.id}>
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <p>${product.price.toFixed(2)}</p>
-            <div className="icons">
-              <FaHeart className="icon" />
-              <FaShareAlt className="icon" />
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <div className="product-card" key={product.id}>
+              <h3>{product.name}</h3>
+              <p>{product.description}</p>
+              <p>${product.price.toFixed(2)}</p>
+              <div className="icons">
+                <FaHeart className="icon" />
+                <FaShareAlt className="icon" />
+              </div>
+              <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
             </div>
-            <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No products found.</p> // Message when no products match
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 // src/pages/SellersForm.js
-
-import React, { useState } from 'react';
-import { uploadImage } from '../api/api'; // Make sure you have this function to handle image uploads
+import React, { useState, useEffect } from 'react';
+import uploadImage from '../api/uploadImage'; // Correctly importing the default export
 import axios from 'axios';
 
 const SellersForm = () => {
@@ -12,6 +11,22 @@ const SellersForm = () => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [products, setProducts] = useState([]); // State for product list
+
+  // Fetch products from backend
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/products');
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to load products.');
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(); // Fetch products on component mount
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,13 +36,15 @@ const SellersForm = () => {
     try {
       // Upload image to Firebase and get the URL
       const imageUrl = await uploadImage(image);
+      console.log('Image uploaded successfully:', imageUrl); // Log the image URL
 
       // Create product object
       const product = { name, description, price: parseFloat(price), category, imageUrl };
+      console.log('Product object:', product); // Log the product object
 
       // Post the product to your Node.js backend
       await axios.post('http://localhost:5000/api/products', product);
-      
+
       // Reset form fields
       setName('');
       setDescription('');
@@ -35,7 +52,11 @@ const SellersForm = () => {
       setCategory('Clothes');
       setImage(null);
       alert('Product added successfully!'); // Feedback for the user
+
+      // Fetch updated product list
+      fetchProducts();
     } catch (err) {
+      console.error('Error adding product:', err); // Log the error
       setError('Error adding product: ' + err.message);
     } finally {
       setLoading(false);
@@ -81,6 +102,24 @@ const SellersForm = () => {
           {loading ? 'Adding...' : 'Add Product'}
         </button>
       </form>
+
+      {/* Product List Section */}
+      <h2>Product List</h2>
+      {products.length === 0 ? (
+        <p>No products available.</p>
+      ) : (
+        <ul>
+          {products.map((product) => (
+            <li key={product.id}>
+              <h3>{product.name}</h3>
+              <p>{product.description}</p>
+              <p>Price: ${product.price.toFixed(2)}</p>
+              <p>Category: {product.category}</p>
+              {product.imageUrl && <img src={product.imageUrl} alt={product.name} style={{ width: '100px' }} />}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

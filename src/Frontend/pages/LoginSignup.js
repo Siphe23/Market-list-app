@@ -1,8 +1,9 @@
 // src/Frontend/pages/LoginSignup.js
-import React, { useState } from 'react';
-import { auth, db } from '../../firebaseConfig';
+import React, { useState, useEffect } from 'react';
+import { auth, db } from '../../Backend/Firebase/firebaseConfig'; // Ensure the path is correct
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 
 const LoginSignup = () => {
     const [isSignup, setIsSignup] = useState(true);
@@ -10,6 +11,9 @@ const LoginSignup = () => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('buyer'); // default role
     const [error, setError] = useState('');
+    const [signupSuccess, setSignupSuccess] = useState(false); // New state for signup success
+
+    const navigate = useNavigate(); // Initialize useNavigate hook
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,9 +30,16 @@ const LoginSignup = () => {
                     email,
                     role,
                 });
+
+                // Show success message
+                alert('Successfully signed up!'); // Toast-like alert
+                setSignupSuccess(true); // Mark signup as successful
             } else {
                 // Login logic
                 await signInWithEmailAndPassword(auth, email, password);
+                
+                // Show success message
+                alert('Successfully logged in!'); // Toast-like alert
             }
 
             // Reset form after successful submission
@@ -39,6 +50,17 @@ const LoginSignup = () => {
             setError(error.message);
         }
     };
+
+    // Redirect to login page after successful signup
+    useEffect(() => {
+        if (signupSuccess) {
+            setTimeout(() => {
+                setIsSignup(false); // Switch to login
+                setSignupSuccess(false); // Reset signup success state
+                navigate('/login'); // Redirect to login page
+            }, 1000); // Delay to show success message
+        }
+    }, [signupSuccess, navigate]);
 
     return (
         <div>

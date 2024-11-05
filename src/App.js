@@ -1,40 +1,31 @@
 // src/App.js
-import React, { useEffect, useState } from 'react';
-import { Provider } from 'react-redux'; 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './Frontend/components/Navbar';
+import React, { useEffect, useState } from 'react'; 
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; 
+import Navbar from './Frontend/components/Navbar'; 
 import Home from './Frontend/pages/Home'; 
-import ShopList from './Frontend/pages/ShopList'; 
+import ShopList from './Frontend/pages/ShopList';
+
 import LoginSignup from './Frontend/pages/LoginSignup'; 
 import Cart from './Frontend/pages/Cart'; 
-import { auth, db } from './Backend/Firebase/firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import Buy from './Frontend/pages/buy'; 
+import Sell from './Frontend/pages/Sell'; 
+
+import { auth } from './Backend/Firebase/firebaseConfig'; 
 
 const App = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null); 
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setUser(currentUser);
-            setLoading(false);
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            setUser(currentUser); 
+            setLoading(false); 
         });
 
-        return () => unsubscribe();
+        return () => unsubscribe(); 
     }, []);
 
-    const renderRedirect = async () => {
-        if (user) {
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            const userRole = userDoc.data()?.role;
-
-            return userRole === 'seller' ? <Navigate to="/shoplist" /> : <Navigate to="/home" />;
-        }
-        return <Navigate to="/login" />;
-    };
-
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div>Loading...</div>; // Consider replacing with a spinner
 
     return (
         <Router>
@@ -44,13 +35,30 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/login" element={<LoginSignup />} />
-                    <Route path="/shoplist" element={renderRedirect()} />
-                    <Route path="/cart" element={<Cart />} />
+                    <Route 
+                        path="/shoplist" 
+                        element={user ? <ShopList /> : <Navigate to="/login" />} 
+                    />
+                    <Route 
+                        path="/cart" 
+                        element={user ? <Cart /> : <Navigate to="/login" />} 
+                    />
+                    <Route 
+                        path="/buy" 
+                        element={user ? <Buy /> : <Navigate to="/login" />} 
+                    />
+                    <Route 
+                        path="/sell" 
+                        element={user ? <Sell /> : <Navigate to="/login" />} 
+                    />
+                    <Route 
+                        path="*" 
+                        element={<Navigate to={user ? '/home' : '/login'} />} 
+                    />
                 </Routes>
             </div>
         </Router>
     );
 };
 
-export default App;
-
+export default App; 

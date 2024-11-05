@@ -1,21 +1,28 @@
-// src/firebaseConfig.js
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// src/Backend/Firebase/firebaseConfig.js
 
-// Replace these values with your Firebase project's configuration
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
+import { getFirestore } from 'firebase/firestore'; // Import Firestore
+import { getStorage } from 'firebase/storage'; // Import Storage
+import { getAnalytics } from 'firebase/analytics'; // Import Analytics
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY", // e.g., "AIzaSyD..."
-    authDomain: "YOUR_AUTH_DOMAIN", // e.g., "your-project-id.firebaseapp.com"
-    projectId: "YOUR_PROJECT_ID", // e.g., "your-project-id"
-    storageBucket: "YOUR_STORAGE_BUCKET", // e.g., "your-project-id.appspot.com"
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // e.g., "123456789"
-    appId: "YOUR_APP_ID" // e.g., "1:123456789:web:abc123def456"
+  apiKey: "AIzaSyAr6lrGokJhGoGIinL9jBcJVwZy3I3rDZU",
+  authDomain: "market-place-100d5.firebaseapp.com",
+  projectId: "market-place-100d5",
+  storageBucket: "market-place-100d5.appspot.com",
+  messagingSenderId: "417791995406",
+  appId: "1:417791995406:web:868fb04049f352d83c965f",
+  measurementId: "G-GEVB2THCTP"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // Get Firebase Auth instance
-const db = getFirestore(app); // Get Firestore instance
+const analytics = getAnalytics(app); // Initialize Analytics
+const auth = getAuth(app); // Initialize Firebase Auth
+const db = getFirestore(app); // Initialize Firestore
+const storage = getStorage(app); // Initialize Storage
 
-export { auth, db }; // Export Auth and Firestore instances
+// Export the initialized services
+export { app, analytics, auth, db, storage };

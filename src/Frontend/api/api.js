@@ -1,25 +1,17 @@
-// src/Frontend/api/api.js
+
+import { storage } from '../../Backend/Firebase/firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 export const uploadImage = async (imageFile) => {
-    const formData = new FormData();
-    formData.append('file', imageFile);
+    if (!imageFile) throw new Error('No image file provided');
 
-    const response = await fetch('https://your-firebase-url/upload', {
-        method: 'POST',
-        body: formData,
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to upload image');
-    }
-
-    return await response.json(); // Return the response or handle it as needed
-};
-
-// Example of other exports
-export const deleteItem = async (itemId) => {
-    // Implementation for deleting an item
-};
-
-export const fetchSellerItems = async () => {
-    // Implementation for fetching items
+    // Create a reference in Firebase Storage
+    const imageRef = ref(storage, `images/${Date.now()}_${imageFile.name}`);
+    
+    // Upload the image
+    await uploadBytes(imageRef, imageFile);
+    
+    // Get the download URL
+    const imageUrl = await getDownloadURL(imageRef);
+    return imageUrl; // This is the Firebase Storage URL
 };
